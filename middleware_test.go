@@ -26,13 +26,19 @@ func TestMiddleware(t *testing.T) {
 	router.GET("/", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		fmt.Fprint(writer, "Middleware!!!")
 	})
+	router.GET("/panic", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		fmt.Fprint(writer, "Panic!!!")
+	})
 
 	middleware := LogMiddleware{router}
 
-	request := httptest.NewRequest("GET", "http://localhost:3000/", nil)
+	// 1 handler error
+	// 2 handler main
+
+	request := httptest.NewRequest("GET", "http://localhost:3000/", nil) // 2
 	recorder := httptest.NewRecorder()
 
-	middleware.ServeHTTP(recorder, request)
+	middleware.ServeHTTP(recorder, request) // 1
 
 	response := recorder.Result()
 	body, _ := io.ReadAll(response.Body)
